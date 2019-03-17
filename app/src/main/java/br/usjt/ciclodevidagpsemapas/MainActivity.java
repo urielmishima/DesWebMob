@@ -1,3 +1,7 @@
+/**
+ * Uriel Henrique Marques Farias Mishima RA: 81717300
+ */
+
 package br.usjt.ciclodevidagpsemapas;
 
 import android.Manifest;
@@ -7,19 +11,21 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     private double latitudeAtual;
     private double longitudeAtual;
+    private ArrayList<Localizacao> locations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,15 +47,15 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        locations = new ArrayList<>();
+
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Uri gmmIntentUri = Uri.parse(String.format("geo:%f,%f?q=restaurantes", latitudeAtual, latitudeAtual));
-
-                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                mapIntent.setPackage("com.google.android.apps.maps");
-                startActivity(mapIntent);
+                Intent intent = new Intent(MainActivity.this, ListaLocaisActivity.class);
+                intent.putExtra("locations", locations);
+                startActivity(intent);
             }
         });
 
@@ -58,6 +65,14 @@ public class MainActivity extends AppCompatActivity {
             public void onLocationChanged(Location location) {
                 latitudeAtual = location.getLatitude();
                 longitudeAtual = location.getLongitude();
+                Localizacao localizacao = new Localizacao();
+                localizacao.setLatitude(latitudeAtual);
+                localizacao.setLongitude(longitudeAtual);
+                locations.add(localizacao);
+                if(locations.size() > 50){
+                    Log.e("Size",">50");
+                    locations.remove(0);
+                }
                 locationTextView.setText(String.format("Lat: %f, Long: %f", latitudeAtual, longitudeAtual));
             }
 
@@ -84,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, APPConstants.REQUEST_LOCATION_UPDATE_MIN_TIME, APPConstants.REQUEST_LOCATION_UPDATE_MIN_DISTANCE, locationListener);
         } else {
             ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_GPS);
         }
@@ -101,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_GPS) {
             if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, APPConstants.REQUEST_LOCATION_UPDATE_MIN_TIME, APPConstants.REQUEST_LOCATION_UPDATE_MIN_DISTANCE, locationListener);
                 }
             } else {
                 Toast.makeText(this, getString(R.string.no_gps_no_app), Toast.LENGTH_SHORT).show();
