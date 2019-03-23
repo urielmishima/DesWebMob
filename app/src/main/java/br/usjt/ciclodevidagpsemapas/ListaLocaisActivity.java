@@ -26,9 +26,8 @@ public class ListaLocaisActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lista_locais);
         Intent origemIntent = getIntent();
         final ArrayList<Localizacao> locations = (ArrayList<Localizacao>) origemIntent.getSerializableExtra("locations");
-
         locationsListView = findViewById(R.id.localizacoesListView);
-        ArrayAdapter<Localizacao> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, locations);
+        LocalizacoesArrayAdapter adapter = new LocalizacoesArrayAdapter(this, locations);
         locationsListView.setAdapter(adapter);
 
         locationsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
