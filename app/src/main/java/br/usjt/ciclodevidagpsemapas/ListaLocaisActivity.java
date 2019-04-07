@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,14 +21,15 @@ import java.util.ArrayList;
 
 public class ListaLocaisActivity extends AppCompatActivity {
 
+    private LocalizacaoDAO localizacaoDAO;
     private RecyclerView locationsRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_locais);
-        Intent origemIntent = getIntent();
-        final ArrayList<Localizacao> localizacoes = (ArrayList<Localizacao>) origemIntent.getSerializableExtra("locations");
+        localizacaoDAO = new  LocalizacaoDAO(this);
+        ArrayList<Localizacao> localizacoes = (ArrayList<Localizacao>) localizacaoDAO.lista();
         locationsRecyclerView = findViewById(R.id.localizacoesRecyclerView);
         locationsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         LocaisRecyclerViewAdapter adapter = new LocaisRecyclerViewAdapter(localizacoes);
@@ -44,7 +46,5 @@ public class ListaLocaisActivity extends AppCompatActivity {
 //                startActivity(mapIntent);
 //            }
 //        });
-
-
     }
 }

@@ -33,12 +33,12 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int REQUEST_CODE_GPS = 1001;
 
+    private LocalizacaoDAO localizacaoDAO;
     private LocationManager locationManager;
     private LocationListener locationListener;
 
     private double latitudeAtual;
     private double longitudeAtual;
-    private ArrayList<Localizacao> locations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,14 +47,13 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        locations = new ArrayList<>();
+        localizacaoDAO = new LocalizacaoDAO(this);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, ListaLocaisActivity.class);
-                intent.putExtra("locations", locations);
                 startActivity(intent);
             }
         });
@@ -63,17 +62,9 @@ public class MainActivity extends AppCompatActivity {
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                latitudeAtual = location.getLatitude();
-                longitudeAtual = location.getLongitude();
-                Localizacao localizacao = new Localizacao();
-                localizacao.setLatitude(latitudeAtual);
-                localizacao.setLongitude(longitudeAtual);
-                locations.add(localizacao);
-                if(locations.size() > 50){
-                    Log.e("Size",">50");
-                    locations.remove(0);
-                }
-                locationTextView.setText(String.format("Lat: %f, Long: %f", latitudeAtual, longitudeAtual));
+                Localizacao localizacao = new Localizacao(location.getLatitude(), location.getLongitude());
+                locationTextView.setText(String.format("Lat: %f, Long: %f", localizacao.getLatitude(), localizacao.getLongitude()));
+                localizacaoDAO.insertLocalizacao(localizacao);
             }
 
             @Override
