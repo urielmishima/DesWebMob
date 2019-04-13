@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.function.Consumer;
 
 public class MainActivity extends AppCompatActivity {
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                Localizacao localizacao = new Localizacao(location.getLatitude(), location.getLongitude());
+                Localizacao localizacao = new Localizacao(location.getLatitude(), location.getLongitude(), new Date());
                 locationTextView.setText(String.format("Lat: %f, Long: %f", localizacao.getLatitude(), localizacao.getLongitude()));
                 localizacaoDAO.insertLocalizacao(localizacao);
             }

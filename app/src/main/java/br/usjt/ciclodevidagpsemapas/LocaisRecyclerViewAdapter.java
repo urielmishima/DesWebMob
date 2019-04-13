@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class LocaisRecyclerViewAdapter extends RecyclerView.Adapter<LocaisViewHolder> {
@@ -33,6 +34,8 @@ public class LocaisRecyclerViewAdapter extends RecyclerView.Adapter<LocaisViewHo
         locaisViewHolder.iconLocalizacaoImageView.setImageResource(R.drawable.ic_location_on_black_24dp);
         locaisViewHolder.longitudeTextView.setText("Longitude: " + localizacao.getLongitude());
         locaisViewHolder.latitudeTextView.setText("Latitude: " + localizacao.getLatitude());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        locaisViewHolder.dataTextView.setText(dateFormat.format(localizacao.getData()));
     }
 
     @Override
