@@ -137,4 +137,27 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+//    public void obtemPrevisoesV5(String cidade){
+//        String endereco = getString(
+//                R.string.web_service_url,
+//                cidade,
+//                getString(R.string.api_key)
+//        );
+//        JsonObjectRequest req = new JsonObjectRequest(
+//                Request.Method.GET,
+//                endereco,
+//                null,
+//                (response) -> {
+//                    lidaComJSON(response);
+//                },
+//                (error) -> {
+//                    Toast.makeText(
+//                            MainActivity.this,
+//                            getString(R.string.connect_error) + ": " + error.getLocalizedMessage(),
+//                            Toast.LENGTH_SHORT
+//                    ).show();
+//                }
+//        );
+//        requestQueue.add(req);
+//    }
 }
