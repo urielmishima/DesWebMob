@@ -23,7 +23,7 @@ public class LocaisRecyclerViewAdapter extends RecyclerView.Adapter<LocaisViewHo
     @NonNull
     @Override
     public LocaisViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View raiz = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item, viewGroup, false);
+        View raiz = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item_main, viewGroup, false);
 
         return new LocaisViewHolder(raiz);
     }
