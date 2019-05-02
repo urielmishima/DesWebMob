@@ -54,9 +54,9 @@ public class MainActivity extends AppCompatActivity {
     private double latitudeAtual;
     private double longitudeAtual;
 
-    private RecyclerView weatherRecyclerView;
-    private WeatherAdapter weatherAdapter;
-    private List<Weather> previsoes;
+    private RecyclerView forecastRecyclerView;
+    private ForecastAdapter forecastAdapter;
+    private List<Forecast> previsoes;
     private RequestQueue requestQueue;
 
     private Gson gson;
@@ -68,15 +68,16 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        weatherRecyclerView = findViewById(R.id.weatherRecyclerView);
-        requestQueue = Volley.newRequestQueue(this);
-        gson = new GsonBuilder().create(); //setDateFormat("EEEE").
-        previsoes = new ArrayList<>();
-        weatherAdapter = new WeatherAdapter(this, previsoes);
-        weatherRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        weatherRecyclerView.setAdapter(weatherAdapter);
-
         localizacaoDAO = new LocalizacaoDAO(this);
+
+        requestQueue = Volley.newRequestQueue(this);
+        gson = new GsonBuilder().create();
+        previsoes = new ArrayList<>();
+
+        forecastAdapter = new ForecastAdapter(this, previsoes);
+        forecastRecyclerView = findViewById(R.id.weatherRecyclerView);
+        forecastRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        forecastRecyclerView.setAdapter(forecastAdapter);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -117,10 +118,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, APPConstants.REQUEST_LOCATION_UPDATE_MIN_TIME, APPConstants.REQUEST_LOCATION_UPDATE_MIN_DISTANCE, locationListener);
         } else {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_GPS);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_GPS);
         }
     }
 
@@ -133,8 +134,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CODE_GPS) {
-            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, APPConstants.REQUEST_LOCATION_UPDATE_MIN_TIME, APPConstants.REQUEST_LOCATION_UPDATE_MIN_DISTANCE, locationListener);
                 }
             } else {
@@ -164,7 +165,8 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-    public void obtemPrevisoesV5(Double lat, Double lon){
+
+    public void obtemPrevisoesV5(Double lat, Double lon) {
         String endereco = getString(
                 R.string.web_service_url,
                 lat.toString(),
@@ -189,33 +191,18 @@ public class MainActivity extends AppCompatActivity {
         requestQueue.add(req);
     }
 
-    public void lidaComJSON(JSONObject resultado){
-        JSONArray list = null;
-        try {
-        previsoes.clear();
-        list = resultado.getJSONArray("list");
-//        if(list.length() > 0){
-//            previsoes = Arrays.asList(gson.fromJson(list.toString(), Weather[].class));
-//        }
-//            weatherAdapter.notifyDataSetChanged();
+    public void lidaComJSON(JSONObject resultado) {
 
-            for (int i = 0; i < list.length(); i++){
-                JSONObject caraDaVez= list.getJSONObject(i);
-                long dt = caraDaVez.getLong("dt");
-                JSONObject main = caraDaVez.getJSONObject("main");
-                double temp_min = main.getDouble("temp_min");
-                double temp_max = main.getDouble("temp_max");
-                double humidity = main.getDouble("humidity");
-                String description = caraDaVez.getJSONArray("weather")
-                        .getJSONObject(0)
-                        .getString("description");
-                String icon = caraDaVez.getJSONArray("weather")
-                        .getJSONObject(0)
-                        .getString("icon");
-                Weather w = new Weather(dt, temp_min, temp_max, humidity, description, icon);
-                previsoes.add(w);
-                weatherAdapter.notifyDataSetChanged();
+        try {
+            previsoes.clear();
+
+            JSONArray list = resultado.getJSONArray("list");
+            if (list.length() > 0) {
+                previsoes.addAll(Arrays.asList(gson.fromJson(list.toString(), Forecast[].class)));
             }
+
+            forecastAdapter.notifyDataSetChanged();
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

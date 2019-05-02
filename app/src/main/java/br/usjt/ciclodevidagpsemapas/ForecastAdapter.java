@@ -11,53 +11,57 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
-public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.WeatherViewHolder> {
+public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder> {
 
     private Context context;
-    private List <Weather> previsoes;
+    private List<Forecast> previsoes;
 
-    public WeatherAdapter(Context context, List <Weather> previsoes){
+    public ForecastAdapter(Context context, List<Forecast> previsoes) {
         this.context = context;
         this.previsoes = previsoes;
     }
 
     @NonNull
     @Override
-    public WeatherViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public ForecastViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
         View raiz = inflater.inflate(R.layout.list_item_main, viewGroup, false);
-        return new WeatherViewHolder(raiz);
+        return new ForecastViewHolder(raiz);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull WeatherViewHolder weatherViewHolder, int i) {
-        Weather caraDaVez = previsoes.get(i);
-        Glide.with(context).load(caraDaVez.getIconURL()).into(weatherViewHolder.conditionImageView);
+    public void onBindViewHolder(@NonNull ForecastViewHolder weatherViewHolder, int i) {
+        Forecast forecast = previsoes.get(i);
+        Weather weather = forecast.getWeather().get(0);
+        Main main = forecast.getMain();
+        Glide.with(context).load(weather.getIconURL()).into(weatherViewHolder.conditionImageView);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE");
         weatherViewHolder.dayTextView.setText(
                 context.getString(
                         R.string.day_description,
-                        caraDaVez.getDayOfWeek(),
-                        caraDaVez.getDescription()
+                        dateFormat.format(forecast.getDayOfWeek()),
+                        weather.getDescription()
                 )
         );
         weatherViewHolder.lowTextView.setText(
                 context.getString(
                         R.string.low_temp,
-                        caraDaVez.getMinTemp()
+                        main.getMinTemp()
                 )
         );
         weatherViewHolder.highTextView.setText(
                 context.getString(
                         R.string.high_temp,
-                        caraDaVez.getMaxTemp()
+                        main.getMaxTemp()
                 )
         );
         weatherViewHolder.humidityTextView.setText(
                 context.getString(
                         R.string.humidity,
-                        caraDaVez.getHumidity()
+                        main.getHumidity()
                 )
         );
     }
@@ -67,7 +71,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.WeatherV
         return previsoes.size();
     }
 
-    class WeatherViewHolder extends RecyclerView.ViewHolder{
+    class ForecastViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView conditionImageView;
         private TextView dayTextView;
@@ -75,7 +79,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.WeatherV
         private TextView highTextView;
         private TextView humidityTextView;
 
-        public WeatherViewHolder (View raiz){
+        public ForecastViewHolder(View raiz) {
             super(raiz);
             conditionImageView = raiz.findViewById(R.id.conditionImageView);
             dayTextView = raiz.findViewById(R.id.dayTextView);
